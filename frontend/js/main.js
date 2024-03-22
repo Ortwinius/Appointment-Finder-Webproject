@@ -6,17 +6,19 @@ $(document).ready(function () {
     $("#btn_Search").click(function (e) {
        loaddata($("#searchfield").val());
     });*/
+    
 
 });
 
-function loaddata(searchterm) {
+
+function loadAppointmentList() {
 
     // TODO: load data 
     $.ajax({
         /*type: "GET",
         url: "../serviceHandler.php",
         cache: false,
-        data: {method: "queryPersonByName", param: searchterm},
+        data: {method: "queryAppointments", param: ???},
         dataType: "json",
         success: function (response) {
             
@@ -26,3 +28,21 @@ function loaddata(searchterm) {
         
     });
 }
+function loadAppointmentDetails(appointment_id) {
+
+    // TODO: load data 
+    $.ajax({
+        /*type: "GET",
+        url: "../serviceHandler.php",
+        cache: false,
+        data: {method: "queryAppointmentsById", param: appointment_id},
+        dataType: "json",
+        success: function (response) {
+            
+            $("#noOfentries").val(response.length);
+            $("#searchResult").show(1000).delay(1000).hide(1000);
+        }*/
+        
+    });
+}
+
