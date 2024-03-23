@@ -3,7 +3,7 @@
 }
 
 /*TODO: configure appointment styling*/
-.appointmentList{
+.appointmentListWrapper{
 
 }
 
@@ -11,7 +11,9 @@
     
 }
 
+.appointmentDetailsWrapper{
+
+}
 .appointmentDetails{
 
 }
-

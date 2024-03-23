@@ -29,16 +29,16 @@ function loadAppointmentList() {
 }
 
 // load appointment objects into html
-function populateAppointmentList(response){
+function populateAppointmentList(responseData){
 
     // Check if response is empty
-    if (!Array.isArray(response) || response.length === 0) {
+    if (!Array.isArray(responseData) || responseData.length === 0) {
         console.log("Empty response or response is not an array.");
         return;
     }
 
     // Loop through each appointment object in the response array
-    response.forEach(function(appointment) {
+    responseData.forEach(function(appointment) {
         // Extract appointment properties
         let id = appointment.id;
         let title = appointment.title;
@@ -49,6 +49,7 @@ function populateAppointmentList(response){
         // Create a clickable appointment entry
         let appointmentEntry = $('<div class="appointmentEntry">' + id + ': ' + title + '</div>');
         appointmentEntry.click(function() {
+            cleanAppointmentDetails();
             loadAppointmentDetails(id);
         });
 
@@ -74,7 +75,23 @@ function loadAppointmentDetails(appointment_id) {
 }
 
 // load appointment details into html
-function populateAppointmentDetails(response){
-    // TODO
-    console.log("Appointment " + response.appointment.appointment_id);
+function populateAppointmentDetails(responseData){
+
+    // TODO: show hours, due date and checkmarks
+    
+    let optionIndex = 1;
+    let appointmentHeader = '<h2 class = "appointmentHeader"> Appointment ' + 
+        responseData[0].id + '</h2>';
+    
+    $("#appointmentDetails").append(appointmentHeader);
+    responseData.forEach(function(response){
+        let dateValue = response.date;
+        let appointmentDetails = $('<div class="#"> Option ' + optionIndex + ': ' + dateValue + '</div>');
+        $("#appointmentDetails").append(appointmentDetails);
+        optionIndex++;
+    });
+}
+
+function cleanAppointmentDetails(){
+    $("#appointmentDetails").empty();
 }
