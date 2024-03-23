@@ -37,7 +37,7 @@ class DataHandler{
         return $result;
     }
     
-    public function queryAppointmentsById($id){
+    public function queryAppointmentById($id){
         $sql="SELECT d_id, date from dates
         WHERE a_id=?";
         $stmt=$this->dbObj->prepare($sql);
@@ -65,6 +65,7 @@ class DataHandler{
     public function saveSelectedDates($param){
         $result="";
 
+        // why 
         $appointmentId=$param['appointmentId'];
         $name=$param['name'];
         $comment=$param['comment'];

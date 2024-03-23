@@ -1,5 +1,7 @@
 <?php
 
+echo "<script>console.log('Loading logic module');</script>";
+
 include("businesslogic/simpleLogic.php");
 
 $param="";

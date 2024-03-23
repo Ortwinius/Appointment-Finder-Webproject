@@ -4,42 +4,24 @@ $(document).ready(function () {
 
 // Reload page
 function refreshPage(){
-    $("#addAppointmentButton").click(function (e) {
+    $("#addAppointmentButton").click(function() {
         addAppointment();
     });
     $("#appointmentDetails").hide();
     loadAppointmentList();
 }
 
-function loadAppointmentDetails(appointment_id) {
-
-    // TODO: load data 
-    $.ajax({
-        /*type: "GET",
-        url: "../serviceHandler.php",
-        cache: false,
-        data: {method: "queryAppointmentsById", param: appointment_id},
-        dataType: "json",
-        success: function (response) {
-            
-            $("#noOfentries").val(response.length);
-            $("#searchResult").show(1000).delay(1000).hide(1000);
-        }*/
-        
-    });
-    $("#appointmentDetails").show();
-}
 
 function loadAppointmentList() {
-
+    console.debug("loading appointment list");
     // TODO: load data 
     $.ajax({
         type: "GET",
-        url: "../serviceHandler.php",
+        url: "../../backend/serviceHandler.php",
         cache: false,
-        data: {method: "queryAppointmentList"},
+        data: {method: "queryAllAppointments"},
         dataType: "json",
-        success: function (response) {
+        complete: function (response) {
             populateAppointmentList(response);
         }
         
@@ -60,8 +42,25 @@ function populateAppointmentList(response){
         });
 
         // add appointments to parent object 
-        $("#appointmentList").append('<div class = "appointmentEntry">' + appointmentEntry.appointment_id + '</div>');
+        $("#appointmentList").append('<div class = "appointmentEntry">' 
+            + appointmentEntry.appointment_id + '</div>');
     }
+}
+
+function loadAppointmentDetails(appointment_id) {
+    console.debug("CLICKED");
+    $.ajax({
+        type: "GET",
+        url: "../../backend/serviceHandler.php",
+        cache: false,
+        data: {method: "queryAppointmentById", param: appointment_id},
+        dataType: "json",
+        success: function (response) {
+            populateAppointmentDetails(response);
+            $("#appointmentDetails").show();
+        }
+        
+    });
 }
 
 // load appointment details into html

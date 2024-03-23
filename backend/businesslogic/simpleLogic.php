@@ -9,8 +9,8 @@ class SimpleLogic{
     // TODO: request function for various queries
     function handleRequest($method, $param){
         switch ($method) {
-            case "queryAppointmentsById":
-                $res = $this->dh->queryAppointmentsById($param);
+            case "queryAppointmentById":
+                $res = $this->dh->queryAppointmentById($param);
                 break;
             case "queryAllAppointments":
                 $res=$this->dh->queryAllAppointments();
