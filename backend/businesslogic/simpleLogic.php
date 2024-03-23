@@ -1,5 +1,8 @@
 <?php 
-include ("../db/dataHandler.php");
+
+set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
+
+include (__DIR__ . "/../db/dataHandler.php");
 
 class SimpleLogic{
     private $dh;

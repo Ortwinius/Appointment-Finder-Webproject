@@ -13,50 +13,60 @@ function refreshPage(){
 
 
 function loadAppointmentList() {
-    console.debug("loading appointment list");
+    console.log("loading appointment list");
     // TODO: load data 
     $.ajax({
         type: "GET",
-        url: "../../backend/serviceHandler.php",
+        url: "../backend/serviceHandler.php",
         cache: false,
         data: {method: "queryAllAppointments"},
         dataType: "json",
-        complete: function (response) {
-            populateAppointmentList(response);
+        complete: function(response){
+            console.log("Query successful");
+            populateAppointmentList(response.responseJSON);
         }
-        
     });
 }
 
 // load appointment objects into html
 function populateAppointmentList(response){
-    if(response.length < 1) return;
 
-    for(let i = 0; i < response.length; i++)
-    {
-        let appointmentEntry = response[i][0];
+    // Check if response is empty
+    if (!Array.isArray(response) || response.length === 0) {
+        console.log("Empty response or response is not an array.");
+        return;
+    }
 
-        // make appointment clickable and load details via id
-        appointmentEntry.click(function(){
-            loadAppointmentDetails(appointmentEntry.appointment_id);
+    // Loop through each appointment object in the response array
+    response.forEach(function(appointment) {
+        // Extract appointment properties
+        let id = appointment.id;
+        let title = appointment.title;
+        let location = appointment.location;
+        let dueTime = appointment.dueTime;
+        let duration = appointment.duration;
+
+        // Create a clickable appointment entry
+        let appointmentEntry = $('<div class="appointmentEntry">' + id + ': ' + title + '</div>');
+        appointmentEntry.click(function() {
+            loadAppointmentDetails(id);
         });
 
-        // add appointments to parent object 
-        $("#appointmentList").append('<div class = "appointmentEntry">' 
-            + appointmentEntry.appointment_id + '</div>');
-    }
+        // Append appointment entry to the appointment list
+        $("#appointmentList").append(appointmentEntry);
+    });
 }
 
 function loadAppointmentDetails(appointment_id) {
-    console.debug("CLICKED");
+    console.log("CLICKED");
     $.ajax({
         type: "GET",
-        url: "../../backend/serviceHandler.php",
+        url: "../backend/serviceHandler.php",
         cache: false,
         data: {method: "queryAppointmentById", param: appointment_id},
         dataType: "json",
-        success: function (response) {
-            populateAppointmentDetails(response);
+        complete: function (response) {
+            populateAppointmentDetails(response.responseJSON);
             $("#appointmentDetails").show();
         }
         
@@ -66,4 +76,5 @@ function loadAppointmentDetails(appointment_id) {
 // load appointment details into html
 function populateAppointmentDetails(response){
     // TODO
+    console.log("Appointment " + response.appointment.appointment_id);
 }

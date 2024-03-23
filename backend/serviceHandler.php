@@ -1,8 +1,7 @@
 <?php
-
-echo "<script>console.log('Loading logic module');</script>";
-
-include("businesslogic/simpleLogic.php");
+// setting absolute include path
+set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
+include(__DIR__ . "/businesslogic/simpleLogic.php");
 
 $param="";
 $method="";

@@ -1,11 +1,15 @@
 <?php 
-include ("../models/appointment.php");
-include ("../models/dateOption.php");
+// TODO : can one get rid of absolute paths?!? without __DIR__?
+set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
+
+include (__DIR__ . "/../models/appointment.php");
+include (__DIR__ . "/../models/dateOption.php");
 // db access
 class DataHandler{
 
     private $dbObj;
     public function __construct() {
+        // require_once ? 
         include ("db.php");
         $this->dbObj=new mysqli($host, $dbuser, $dbpassword, $database);
     }
@@ -65,8 +69,7 @@ class DataHandler{
     public function saveSelectedDates($param){
         $result="";
 
-        // why 
-        $appointmentId=$param['appointmentId'];
+        //$appointmentId=$param['appointmentId'];
         $name=$param['name'];
         $comment=$param['comment'];
         $selectedDateIDs=$param['selectedDates'];
