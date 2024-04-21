@@ -10,7 +10,7 @@ class DataHandler{
     private $dbObj;
     public function __construct() {
         // require_once ? 
-        include ("db.php");
+        include ("dbAccess.php");
         $this->dbObj=new mysqli($host, $dbuser, $dbpassword, $database);
     }
 
@@ -42,8 +42,11 @@ class DataHandler{
     }
     
     public function queryAppointmentById($id){
-        $sql="SELECT d_id, date from dates
-        WHERE a_id=?";
+        $sql="SELECT a.a_id, a.title, a.location, a.due_date, a.duration, d.d_id, d.date 
+        FROM appointments a
+        LEFT JOIN dates d ON a.a_id=d.a_id
+        WHERE a.a_id=?";
+
         $stmt=$this->dbObj->prepare($sql);
         $stmt->bind_param('i',$id);
 
@@ -54,11 +57,20 @@ class DataHandler{
         }
 
         $stmt->execute();
-        $stmt->bind_result($d_id, $date);
-        while($stmt->fetch())
-        {
-            $dateOption=new DateOption($id,$date);
-            $result[]=$dateOption;
+        $stmt->bind_result($appointmentId, $title, $location, 
+        $dueDate, $duration, $dateId, $date);
+
+        $result = array();
+        while($stmt->fetch()) {
+            // Store appointment details
+            $result['id'] = $appointmentId;
+            $result['title'] = $title;
+            $result['location'] = $location;
+            $result['dueDate'] = $dueDate;
+            $result['duration'] = $duration;
+            // Store each date option inside dates array as key pair value 
+            // [] for appending to array
+            $result['dates'][] = array('id' => $dateId, 'date' => $date);
         }
 
         $stmt->close();

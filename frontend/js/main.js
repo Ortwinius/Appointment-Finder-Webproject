@@ -47,7 +47,7 @@ function populateAppointmentList(responseData){
         let duration = appointment.duration;
 
         // Create a clickable appointment entry
-        let appointmentEntry = $('<div class="appointmentEntry">' + id + ': ' + title + '</div>');
+        let appointmentEntry = $('<div class="list-group-item">' + id + ': ' + title + '</div>');
         appointmentEntry.click(function() {
             cleanAppointmentDetails();
             loadAppointmentDetails(id);
@@ -59,7 +59,6 @@ function populateAppointmentList(responseData){
 }
 
 function loadAppointmentDetails(appointment_id) {
-    console.log("CLICKED");
     $.ajax({
         type: "GET",
         url: "../backend/serviceHandler.php",
@@ -74,20 +73,49 @@ function loadAppointmentDetails(appointment_id) {
     });
 }
 
-// load appointment details into html
 function populateAppointmentDetails(responseData){
 
-    // TODO: show hours, due date and checkmarks
+    // check if response is empty or not in expected format
+    if (!responseData || !responseData.id) {
+        console.log("Empty response or response is not in expected format.");
+        return;
+    }
+
+    // display appointment details
+    let appointmentHeader = '<h2 class="appointmentHeader"> Appointment ' + responseData.id + ': ' + responseData.title + '</h2>';
+    let appointmentDueDate = '<p> Deadline: ' + formatDate(responseData.dueDate) + '</p>';
+    let appointmentDuration = '<p> Dauer: ' + responseData.duration + ' min</p>';
     
-    let optionIndex = 1;
-    let appointmentHeader = '<h2 class = "appointmentHeader"> Appointment ' + 
-        responseData[0].id + '</h2>';
-    
+    // append infos to screen
     $("#appointmentDetails").append(appointmentHeader);
-    responseData.forEach(function(response){
-        let dateValue = response.date;
-        let appointmentDetails = $('<div class="#"> Option ' + optionIndex + ': ' + dateValue + '</div>');
-        $("#appointmentDetails").append(appointmentDetails);
+    $("#appointmentDetails").append(appointmentDueDate);
+    $("#appointmentDetails").append(appointmentDuration);
+
+    // display appointment options
+    let optionIndex = 1;
+    responseData.dates.forEach(function(dateOption) {
+        let dateValue = formatDate(dateOption.date);
+
+        // checkmark for every appointment option styled with bootstrap
+        let appointmentCheckmark = $('<div>', { class: 'form-check' })
+            .append($('<input>', { 
+                class: 'form-check-input', 
+                type: 'checkbox', 
+                id: 'checkmark-' + optionIndex, 
+                name: 'checkmark' 
+            }))
+            .append($('<label>', { 
+                class: 'form-check-label', 
+                for: 'checkmark-' + optionIndex,
+                text: 'Option ' + optionIndex + ': ' + dateValue // adding text for label
+            }));
+        
+        // main wrapper for details
+        let appointmentDetails = $('<div class="appointmentDetails"></div>'); 
+
+        appointmentDetails.append(appointmentCheckmark); // append checkmark and label
+        $("#appointmentDetails").append(appointmentDetails); // add option to screen
+        
         optionIndex++;
     });
 }
