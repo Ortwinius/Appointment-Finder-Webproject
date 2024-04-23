@@ -24,6 +24,9 @@ class SimpleLogic{
             case "saveNewAppointment":
                 $res=$this->dh->saveNewAppointment($param);
                 break;
+            case "deleteAppointment":
+                $res=$this->dh->deleteAppointment($param);
+                break;
             default:
                 $res = null;
                 break;

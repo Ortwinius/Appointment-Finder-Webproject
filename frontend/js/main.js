@@ -6,7 +6,7 @@ $(document).ready(function () {
     })
     
     $("#addAppointment").click(function(){
-        addAppoitment();
+        addAppointment();
     })
     
     $("#submitSelection").click(function(){
@@ -21,6 +21,9 @@ function refreshPage(){
     $("#appointmentDetails").hide();
     $("#selectionSubmitForm").hide();
     loadAppointmentList();
+    $("input").each(function(){
+        $(this).val('');
+    })
 }
 
 
@@ -54,12 +57,16 @@ function populateAppointmentList(responseData){
         // Extract appointment properties
         let id = appointment.id;
         let title = appointment.title;
-        let location = appointment.location;
         let dueTime = appointment.dueTime;
-        let duration = appointment.duration;
 
+        // if expired -> print [expired] next to appointment
+        let expiredText="";
+        if(new Date(dueTime)<new Date()){
+            expiredText=" [expired]";
+        }
+        
         // Create a clickable appointment entry
-        let appointmentEntry = $('<div class="list-group-item">' + id + ': ' + title + '</div>');
+        let appointmentEntry = $('<div class="list-group-item">' + id + ': ' + title + expiredText + '</div>');
         appointmentEntry.click(function() {
             cleanAppointmentDetails();
             loadAppointmentDetails(id);
@@ -97,6 +104,10 @@ function populateAppointmentDetails(responseData){
     let appointmentHeader = '<h2 class="appointmentHeader"> Appointment ' + responseData.id + ': ' + responseData.title + '</h2>';
     let appointmentDuration = '<p> Duration: ' + responseData.duration + ' min</p>';
     let appointmentDueDate = $('<p> Deadline: ' + formatDateTime(responseData.dueDate) + '</p>');
+    let appointmentDeleteButton = $('<button type="button" class="btn btn-danger delete-option">Delete</button>');
+    appointmentDeleteButton.click(function(){
+        deleteAppointment(responseData.id);
+    })
     
     let dueDateReached=false;
 
@@ -108,6 +119,7 @@ function populateAppointmentDetails(responseData){
 
     // append infos to screen
     $("#appointmentDetails").append(appointmentHeader);
+    $("#appointmentDetails").append(appointmentDeleteButton);
     $("#appointmentDetails").append(appointmentDueDate);
     $("#appointmentDetails").append(appointmentDuration);
 
@@ -141,6 +153,25 @@ function populateAppointmentDetails(responseData){
         
         optionIndex++;
     });
+}
+
+function deleteAppointment(id){
+    $.ajax({
+        type: "POST",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: {method: "deleteAppointment", param: id},
+        dataType: "json",
+        success: function (response) {
+            displayInfo("Appointment deleted",false);
+            console.log("Appointment deleted");
+            refreshPage();
+        },
+        error:function(error){
+            displayInfo("Error while deleting appointment",true);
+            console.log("Error while deleting appointment:  ",error);
+        }
+    }); 
 }
 
 function cleanAppointmentDetails(){
@@ -194,6 +225,7 @@ function postSelection(data){
         success: function (response) {
             displayInfo("Your selection has been saved",false);
             console.log("Successfully saved selection");
+            refreshPage();
         },
         error:function(error){
             displayInfo("Error while saving selection",true);
@@ -220,9 +252,9 @@ function displayInfo(infoText, isError) {
 function addOptionGroup(){
 
     //creates optionGroup (div with datePicker and deleteButton)
-    var $newOptionGroup = $('<div class="form-group option-group">');
-    var $datePicker = $('<input type="datetime-local" class="form-control date-picker">');
-    var $deleteButton = $('<button type="button" class="btn btn-danger delete-option">x</button>');
+    let $newOptionGroup = $('<div class="form-group option-group">');
+    let $datePicker = $('<input type="datetime-local" class="form-control date-picker">');
+    let $deleteButton = $('<button type="button" class="btn btn-danger delete-option">x</button>');
     $deleteButton.click(function() {
         $(this).closest('.option-group').remove(); // Remove the parent option group
     });
@@ -236,7 +268,7 @@ function addOptionGroup(){
     $('#addOptionList').append($newOptionGroup);
 }
 
-function addAppoitment(){
+function addAppointment(){
     let title = $('#title').val();
     let location = $('#location').val();
     let dueDate = $('#dueDate').val();
