@@ -3,3 +3,19 @@
     padding: 0;
     
 }
+
+.option-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.option-group span {
+    margin-right: 10px;
+}
+.date-picker {
+    flex: 1;
+    margin-right: 10px;
+}
+.delete-option {
+    flex-shrink: 0;
+}

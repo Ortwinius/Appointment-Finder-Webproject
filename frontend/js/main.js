@@ -1,15 +1,23 @@
 $(document).ready(function () {
+
+    //add all eventHandler
+    $("#addOption").click(function(){
+        addOptionGroup();
+    })
+    
+    $("#addAppointment").click(function(){
+        addAppoitment();
+    })
+    
+    $("#submitSelection").click(function(){
+        submitSelection();
+    });
     refreshPage();
 });
 
 // Reload page
 function refreshPage(){
-    // $("#addAppointmentButton").click(function() {
-    //     addAppointment();
-    // });
-    $("#submitSelection").click(function(){
-        submitSelection();
-    });
+    $("#addOptionList").empty();
     $("#appointmentDetails").hide();
     $("#selectionSubmitForm").hide();
     loadAppointmentList();
@@ -40,6 +48,7 @@ function populateAppointmentList(responseData){
         return;
     }
 
+    $("#appointmentList").empty();
     // Loop through each appointment object in the response array
     responseData.forEach(function(appointment) {
         // Extract appointment properties
@@ -86,9 +95,17 @@ function populateAppointmentDetails(responseData){
 
     // display appointment details
     let appointmentHeader = '<h2 class="appointmentHeader"> Appointment ' + responseData.id + ': ' + responseData.title + '</h2>';
-    let appointmentDueDate = '<p> Deadline: ' + formatDate(responseData.dueDate) + '</p>';
     let appointmentDuration = '<p> Duration: ' + responseData.duration + ' min</p>';
+    let appointmentDueDate = $('<p> Deadline: ' + formatDateTime(responseData.dueDate) + '</p>');
     
+    let dueDateReached=false;
+
+    if(new Date(responseData.dueDate)<new Date()){
+        appointmentDueDate.css("color","red");
+        dueDateReached=true;
+    }
+
+
     // append infos to screen
     $("#appointmentDetails").append(appointmentHeader);
     $("#appointmentDetails").append(appointmentDueDate);
@@ -98,7 +115,7 @@ function populateAppointmentDetails(responseData){
     console.log(responseData)
     let optionIndex = 1;
     responseData.dates.forEach(function(dateOption) {
-        let dateValue = formatDate(dateOption.date);
+        let dateValue = formatDateTime(dateOption.date);
 
         // checkmark for every appointment option styled with bootstrap
         let appointmentCheckmark = $('<div>', { class: 'form-check' })
@@ -107,14 +124,15 @@ function populateAppointmentDetails(responseData){
                 type: 'checkbox', 
                 id: 'checkmark-' + optionIndex, 
                 name: 'checkmark',
-                dbId: dateOption.id
+                dbId: dateOption.id,
+                disabled: dueDateReached    //if dueDate is reached, its disabled
             }))
             .append($('<label>', { 
                 class: 'form-check-label', 
                 for: 'checkmark-' + optionIndex,
-                text: 'Option ' + optionIndex + ': ' + dateValue // adding text for label
+                text: dateValue // adding text for label
             }));
-        
+
         // main wrapper for details
         let appointmentDetails = $('<div class="appointmentDetails"></div>'); 
 
@@ -133,31 +151,34 @@ function submitSelection(){
     let name = $("#name").val();
     let comment = $("#comment").val();
 
+    // check if name is valid (>1)
     if(name.length<1){
         displayInfo("Please enter your name",true);
         return;
     }
 
-    let dateIdString="";
+    // get options seperated by colons
+    let optionIdString="";
     $(".form-check-input").each(function(){
         if($(this).prop('checked'))
         {
-            dateIdString+=$(this).attr('dbid')+",";
+            optionIdString+=$(this).attr('dbid')+",";
         }
     })
 
-    if (dateIdString !== '') {
-        dateIdString = dateIdString.slice(0, -1);
+    // remove last colon
+    if (optionIdString !== '') {
+        optionIdString = optionIdString.slice(0, -1);
     }
     else{
         displayInfo("Please check an option",true);
         return;
     }
 
-    var data = {
+    let data = {
         name: name,
         comment: comment,
-        selectedDates: dateIdString
+        selectedDates: optionIdString
     };
 
     postSelection(data);
@@ -181,8 +202,9 @@ function postSelection(data){
     }); 
 }
 
+// displays info red/green (Error/Success)
 function displayInfo(infoText, isError) {
-    var $infoParagraph = $('#info');
+    let $infoParagraph = $('#info');
 
     $infoParagraph.text(infoText);
 
@@ -193,4 +215,87 @@ function displayInfo(infoText, isError) {
     setTimeout(function() {
         $infoParagraph.text('');
     }, 3000);
+}
+
+function addOptionGroup(){
+
+    //creates optionGroup (div with datePicker and deleteButton)
+    var $newOptionGroup = $('<div class="form-group option-group">');
+    var $datePicker = $('<input type="datetime-local" class="form-control date-picker">');
+    var $deleteButton = $('<button type="button" class="btn btn-danger delete-option">x</button>');
+    $deleteButton.click(function() {
+        $(this).closest('.option-group').remove(); // Remove the parent option group
+    });
+
+    // Append the date picker and delete button to the option group
+    $newOptionGroup.append('<span>-- </span>');
+    $newOptionGroup.append($datePicker);
+    $newOptionGroup.append($deleteButton);
+
+    // Append the new option group to the addOptionList container
+    $('#addOptionList').append($newOptionGroup);
+}
+
+function addAppoitment(){
+    let title = $('#title').val();
+    let location = $('#location').val();
+    let dueDate = $('#dueDate').val();
+    let duration = $('#duration').val();
+
+    //check if values are empty
+    if (title === '' || location === '' || dueDate === '' || duration === '') {
+        displayInfo("Please fill in all required fields (Title, Location, Due Date, Duration)", true);
+        return;
+    }
+    //check if dueDate is in the future
+    if(new Date(dueDate)<new Date())
+    {
+        displayInfo("Due Date must be in the future", true);
+        return;
+    }
+
+    //check if there are at least 2 valid options (not empty and must be in future) -> only valid options will be saved
+    let validOptions=0;
+    let optionDates = [];
+    $('.date-picker').each(function() {
+        let date=$(this).val();
+        if(date!=''&&new Date(date)>new Date()){
+            optionDates.push(reverseDateTime(date));
+            validOptions++;
+        }
+    });
+    if(validOptions<2)
+    {
+        displayInfo("There must be at least 2 valid options", true);
+        return;
+    }
+
+    let data = {
+        title: title,
+        location: location,
+        dueDate: dueDate,
+        duration: duration,
+        options: optionDates
+    };
+
+    postNewAppointment(data);
+}
+
+function postNewAppointment(data){
+    $.ajax({
+        type: "POST",
+        url: "../backend/serviceHandler.php",
+        cache: false,
+        data: {method: "saveNewAppointment", param: data},
+        dataType: "json",
+        success: function (response) {
+            displayInfo("NewAppointment has been created",false);
+            console.log("Successfully created appointment");
+            refreshPage();
+        },
+        error:function(error){
+            displayInfo("Error while creating appointment",true);
+            console.log("Error while creating appointment: ",error);
+        }
+    }); 
 }

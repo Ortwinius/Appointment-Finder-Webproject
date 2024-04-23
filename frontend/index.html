@@ -28,14 +28,39 @@
                     <div class = "list-group" id = "appointmentList">
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
                     <div class = "appointmentDetailsWrapper" id = "appointmentDetails">
                     </div>
                 </div>
             </div>
             <div class="row">
-                <!-- Add Appointment Form -->
-                <div class="col-md-6" id="selectionSubmitForm">
+                <div class="col-md-6 p-1" id="addAppointmentForm">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" id="title" placeholder="Enter the title">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" class="form-control" id="location" placeholder="Enter the location">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due-Date</label>
+                        <input type="datetime-local" class="form-control" id="dueDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">Duration</label>
+                        <input type="number" class="form-control" id="duration" placeholder="Enter duration [min]">
+                    </div>
+                    <label>Options</label>
+                    <div class="form-group" id="addOptionList">
+                    </div>
+                    <button type="submit" class="btn btn-light border" id="addOption">+</button>
+                    <br><br>
+                    <button type="submit" class="btn btn-primary" id="addAppointment">Add appointment</button>
+                </div>
+                <div class="col-md-1"></div> 
+                <div class="col-md-5" id="selectionSubmitForm">
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" placeholder="Enter your name">
@@ -44,7 +69,8 @@
                         <label for="comment">Comment</label>
                         <textarea class="form-control" rows="5" id="comment" placeholder="Enter comment (optional)"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="submitSelection">Submit</button>
+                    <br>
+                    <button type="submit" class="btn btn-primary" id="submitSelection">Submit selection</button>
                 </div>
             </div>
             <div class="row">

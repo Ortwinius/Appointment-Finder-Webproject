@@ -111,4 +111,38 @@ class DataHandler{
 
         return $result;
     }
+
+    public function saveNewAppointment($param){
+        $result="";
+
+        //$appointmentId=$param['appointmentId'];
+        $title=$param['title'];
+        $location=$param['location'];
+        $dueDate=$param['dueDate'];
+        $duration=$param['duration'];
+        $options = $param['options'];
+
+        try{
+            $stmt = $this->dbObj->prepare("INSERT INTO appointments (title, location, due_date, duration) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $title, $location, $dueDate, $duration);
+            $stmt->execute();
+
+            $appointmentId=$this->dbObj->insert_id;    //returns last id from AUTO_INCREMENT field
+
+            $sql=("INSERT INTO dates(date,a_id) VALUES (?,?)");
+            $stmt = $this->dbObj->prepare($sql);
+            
+            foreach($options as $date){
+                $stmt->bind_param("si",$date, $appointmentId);
+                $stmt->execute();
+            }
+
+            $result= "Success";
+        }
+        catch(Exception $ex){
+            $result= "an error occured: " + $ex->getMessage();
+        }
+
+        return $result;
+    }
 }
