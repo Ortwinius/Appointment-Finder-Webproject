@@ -17,9 +17,13 @@
 </head>
 <body>
     <div class = "mainContent">
-        <h2 class = "ps-5 pt-3">Appointment Finder</h2>
-        <div class="container pt-2">
-            <div class="row">
+        <div class="container p-2">
+            <div class="row border-bottom">
+                <div class="col-md-12">
+                    <h2 class="text-center">Appointment Finder</h2>
+                </div>
+            </div>
+            <div class="row border-bottom py-3">
                 <div class="col-md-6">
                     <div class = "list-group" id = "appointmentList">
                     </div>
@@ -27,6 +31,25 @@
                 <div class="col-md-6">
                     <div class = "appointmentDetailsWrapper" id = "appointmentDetails">
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Add Appointment Form -->
+                <div class="col-md-6" id="selectionSubmitForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Comment</label>
+                        <textarea class="form-control" rows="5" id="comment" placeholder="Enter comment (optional)"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitSelection">Submit</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-center" id="info"></p>
                 </div>
             </div>
         </div>

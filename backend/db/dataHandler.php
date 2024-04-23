@@ -89,7 +89,7 @@ class DataHandler{
         $selectedDateIDsArray=explode(',',$selectedDateIDs);
 
         try{
-            $stmt = $this->dbObj->prepare("INSERT INTO users (name, comment) VALUES (?, ?)");
+            $stmt = $this->dbObj->prepare("INSERT INTO users (name, commentary) VALUES (?, ?)");
             $stmt->bind_param("ss", $name, $comment);
             $stmt->execute();
 

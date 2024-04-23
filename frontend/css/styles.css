@@ -1,21 +1,5 @@
-.body{
-
-}
-
-/*TODO: configure appointment styling*/
-.appointmentListWrapper{
-
-}
-
 .appointmentEntry{
     list-style: none;
     padding: 0;
     
-}
-
-.appointmentDetailsWrapper{
-
-}
-.appointmentDetails{
-
 }
